@@ -11,6 +11,7 @@
   "customizations": {
     "vscode": {
       "tasks": [
+        // Spring Boot Services
         {
           "label": "Build user_service Docker image (Spring Boot)",
           "type": "shell",
@@ -22,65 +23,66 @@
           "command": "docker build -t course_service:dev ./course_service"
         },
         {
-          "label": "Build course_service Docker image (Spring Boot)",
+          "label": "Build content_service Docker image (FastAPI)",
           "type": "shell",
-          "command": "docker build -t course_service:dev ./content_service"
+          "command": "docker build -t content_service:dev ./content_service"
         },
         {
-          "label": "Build course_service Docker image (Spring Boot)",
+          "label": "Build assessment_service Docker image (Spring Boot)",
           "type": "shell",
-          "command": "docker build -t course_service:dev ./assessment_service"
+          "command": "docker build -t assessment_service:dev ./assessment_service"
         },
         {
-          "label": "Build course_service Docker image (Spring Boot)",
+          "label": "Build gamification_service Docker image (Spring Boot)",
           "type": "shell",
-          "command": "docker build -t course_service:dev ./gamification_service"
+          "command": "docker build -t gamification_service:dev ./gamification_service"
         },
         {
-          "label": "Build course_service Docker image (NestJS)",
+          "label": "Build live-session_service Docker image (Spring Boot)",
           "type": "shell",
-          "command": "docker build -t course_service:dev ./notification_service"
+          "command": "docker build -t live-session_service:dev ./live-session_service"
         },
         {
-          "label": "Build course_service Docker image (Spring Boot)",
+          "label": "Build collaboration_service Docker image (Spring Boot)",
           "type": "shell",
-          "command": "docker build -t course_service:dev ./analytics_service"
+          "command": "docker build -t collaboration_service:dev ./collaboration_service"
         },
         {
-          "label": "Build course_service Docker image (Node.js(NestJS))",
+          "label": "Build admin_service Docker image (Spring Boot)",
           "type": "shell",
-          "command": "docker build -t course_service:dev ./social-media_service"
+          "command": "docker build -t admin_service:dev ./admin_service"
         },
         {
-          "label": "Build course_service Docker image (Spring Boot)",
+          "label": "Build ai_service Docker image (FastAPI)",
           "type": "shell",
-          "command": "docker build -t course_service:dev ./live-session_service"
+          "command": "docker build -t ai_service:dev ./ai_service"
+        },
+
+        // NestJS Services
+        {
+          "label": "Build notification_service Docker image (NestJS)",
+          "type": "shell",
+          "command": "docker build -t notification_service:dev ./notification_service"
         },
         {
-          "label": "Build course_service Docker image (Spring Boot)",
+          "label": "Build social-media_service Docker image (Node.js/NestJS)",
           "type": "shell",
-          "command": "docker build -t course_service:dev ./collaboration_service"
+          "command": "docker build -t social-media_service:dev ./social-media_service"
         },
         {
-          "label": "Build course_service Docker image (Spring Boot)",
+          "label": "Build certification_service Docker image (Node.js/NestJS)",
           "type": "shell",
-          "command": "docker build -t course_service:dev ./admin_service"
+          "command": "docker build -t certification_service:dev ./certification_service"
         },
+
+        // API Gateway
         {
-          "label": "Build course_service Docker image (FastAPI)",
+          "label": "Build API-Gateway_service Docker image (Spring Boot)",
           "type": "shell",
-          "command": "docker build -t course_service:dev ./ai_service"
-        },
-        {
-          "label": "Build course_service Docker image (Node.js(NestJS))",
-          "type": "shell",
-          "command": "docker build -t course_service:dev ./certification_service"
-        },
-        {
-          "label": "Build course_service Docker image (Spring Boot)",
-          "type": "shell",
-          "command": "docker build -t course_service:dev ./API-Gateway_service"
+          "command": "docker build -t api-gateway_service:dev ./API-Gateway_service"
         }
+
+        // Additional services can be added here
       ]
     }
   }
