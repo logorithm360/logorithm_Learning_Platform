@@ -1,0 +1,129 @@
+name: Cross-Platform Microservices CI/CD
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**/Dockerfile'
+      - '**/pom.xml'
+      - '**/package.json'
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      service:
+        description: 'Service to build (leave empty for all)'
+        required: false
+        default: 'all'
+      platform:
+        description: 'Platform to build on'
+        required: false
+        default: 'all'
+        type: choice
+        options: ['all', 'linux', 'windows']
+
+env:
+  DOCKER_BUILDKIT: 1
+  COMPOSE_DOCKER_CLI_BUILD: 1
+
+jobs:
+  determine_matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Service Matrix
+        id: set-matrix
+        run: |
+          # Get input values or service changes
+          SERVICES="${{ inputs.service }}"
+          PLATFORM="${{ inputs.platform }}"
+          
+          if [ "$SERVICES" == "all" ]; then
+            SERVICES=$(find . -mindepth 1 -maxdepth 1 -type d -not -path './.*' -printf '%f\n' | tr '\n' ',')
+          fi
+          
+          # Generate JSON matrix
+          MATRIX=$(jq -n \
+            --arg services "${SERVICES%,}" \
+            --arg platform "$PLATFORM" \
+            '{
+              "service": ($services | split(",")),
+              "os": (if $platform == "all" then ["ubuntu-latest", "windows-latest"] 
+                     elif $platform == "linux" then ["ubuntu-latest"]
+                     else ["windows-latest"] end)
+            }')
+          
+          echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+
+  build:
+    needs: determine_matrix
+    strategy:
+      matrix: ${{ fromJson(needs.determine_matrix.outputs.matrix) }}
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup platform
+        shell: bash
+        run: |
+          echo "Selected platform: ${{ matrix.os }}"
+          if [ "${{ matrix.os }}" == "windows-latest" ]; then
+            echo "Using Windows containers"
+            echo "DOCKER_DEFAULT_PLATFORM=windows" >> $GITHUB_ENV
+          else
+            echo "Using Linux containers"
+            echo "DOCKER_DEFAULT_PLATFORM=linux/amd64" >> $GITHUB_ENV
+          fi
+      
+      - name: Docker setup
+        uses: docker/setup-buildx-action@v2
+        with:
+          driver: "docker"
+          driver-opts: |
+            image=moby/buildkit:latest
+      
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.docker/buildx-cache
+            ~/.m2/repository
+            ~/.gradle/caches
+            ~/.npm
+          key: ${{ runner.os }}-${{ matrix.service }}-${{ hashFiles(format('{0}/**/Dockerfile', matrix.service), format('{0}/**/pom.xml', matrix.service), format('{0}/**/package.json', matrix.service)) }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.service }}-
+      
+      - name: Build service
+        shell: bash
+        run: |
+          cd "${{ matrix.service }}"
+          
+          # Determine build command based on service type
+          if [ -f "pom.xml" ]; then
+            BUILD_CMD="./mvnw clean package -DskipTests"
+          elif [ -f "package.json" ]; then
+            BUILD_CMD="npm ci && npm run build"
+          else
+            BUILD_CMD="echo 'No specific build command found'"
+          fi
+          
+          echo "Running: $BUILD_CMD"
+          eval $BUILD_CMD
+          
+          docker buildx build \
+            --platform $DOCKER_DEFAULT_PLATFORM \
+            -t "${{ matrix.service }}:${{ github.sha }}" \
+            -t "${{ matrix.service }}:latest" \
+            --cache-from=type=local,src=~/.docker/buildx-cache \
+            --cache-to=type=local,dest=~/.docker/buildx-cache-new \
+            --load \
+            .
+          
+          if [ "${{ github.ref == 'refs/heads/main' }}" == "true" ]; then
+            docker push "${{ matrix.service }}:${{ github.sha }}"
+          fi
