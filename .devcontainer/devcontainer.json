@@ -1,0 +1,87 @@
+{
+  "name": "Online Learning Monorepo Dev",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "postCreateCommand": "echo 'Dev container ready! Build your service as needed.'",
+  "customizations": {
+    "vscode": {
+      "tasks": [
+        {
+          "label": "Build user_service Docker image (Spring Boot)",
+          "type": "shell",
+          "command": "docker build -t user_service:dev ./user_service"
+        },
+        {
+          "label": "Build course_service Docker image (Spring Boot)",
+          "type": "shell",
+          "command": "docker build -t course_service:dev ./course_service"
+        },
+        {
+          "label": "Build course_service Docker image (Spring Boot)",
+          "type": "shell",
+          "command": "docker build -t course_service:dev ./content_service"
+        },
+        {
+          "label": "Build course_service Docker image (Spring Boot)",
+          "type": "shell",
+          "command": "docker build -t course_service:dev ./assessment_service"
+        },
+        {
+          "label": "Build course_service Docker image (Spring Boot)",
+          "type": "shell",
+          "command": "docker build -t course_service:dev ./gamification_service"
+        },
+        {
+          "label": "Build course_service Docker image (NestJS)",
+          "type": "shell",
+          "command": "docker build -t course_service:dev ./notification_service"
+        },
+        {
+          "label": "Build course_service Docker image (Spring Boot)",
+          "type": "shell",
+          "command": "docker build -t course_service:dev ./analytics_service"
+        },
+        {
+          "label": "Build course_service Docker image (Node.js(NestJS))",
+          "type": "shell",
+          "command": "docker build -t course_service:dev ./social-media_service"
+        },
+        {
+          "label": "Build course_service Docker image (Spring Boot)",
+          "type": "shell",
+          "command": "docker build -t course_service:dev ./live-session_service"
+        },
+        {
+          "label": "Build course_service Docker image (Spring Boot)",
+          "type": "shell",
+          "command": "docker build -t course_service:dev ./collaboration_service"
+        },
+        {
+          "label": "Build course_service Docker image (Spring Boot)",
+          "type": "shell",
+          "command": "docker build -t course_service:dev ./admin_service"
+        },
+        {
+          "label": "Build course_service Docker image (FastAPI)",
+          "type": "shell",
+          "command": "docker build -t course_service:dev ./ai_service"
+        },
+        {
+          "label": "Build course_service Docker image (Node.js(NestJS))",
+          "type": "shell",
+          "command": "docker build -t course_service:dev ./certification_service"
+        },
+        {
+          "label": "Build course_service Docker image (Spring Boot)",
+          "type": "shell",
+          "command": "docker build -t course_service:dev ./API-Gateway_service"
+        }
+      ]
+    }
+  }
+}
