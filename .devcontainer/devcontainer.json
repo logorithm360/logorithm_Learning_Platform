@@ -57,6 +57,11 @@
           "type": "shell",
           "command": "docker build -t ai_service:dev ./ai_service"
         },
+        {
+          "label": "Build ai_service Docker image (Spring Boot)",
+          "type": "shell",
+          "command": "docker build -t ai_service:dev ./analytics_service"
+        },
 
         // NestJS Services
         {
